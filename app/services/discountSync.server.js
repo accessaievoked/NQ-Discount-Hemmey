@@ -497,7 +497,8 @@ async function buildCartOffersPayload(admin) {
     for (const node of conn.nodes) {
       const get = (key) => node.fields.find((f) => f.key === key)?.value || "";
       const code = get("code");
-      if (!code) continue;
+      // Automatic discounts have no code; they are included too (automatic: true)
+      // so the cart drawer can list them as auto-applied offers.
 
       // Gate: only offers a merchant has explicitly approved in the app
       // dashboard are allowed onto the storefront cart. Everything else
@@ -514,6 +515,8 @@ async function buildCartOffersPayload(admin) {
 
       payload.push({
         code,
+        title: get("title"),
+        automatic: !code,
         description: get("description"),
         minimum_amount: minimumAmountRaw ? Number(minimumAmountRaw) : 0,
         savings_label: get("savings_label"),
