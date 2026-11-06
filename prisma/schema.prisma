@@ -1,0 +1,45 @@
+// This file didn't exist yet in your project (db.server.js imports
+// @prisma/client, but there was no schema for it to generate a client
+// from). Provider is Postgres, not SQLite: Vercel's serverless functions
+// have no persistent disk, so a SQLite file can't survive between requests.
+//
+// Get a free Postgres database from https://neon.tech or
+// https://supabase.com (both have a free tier, no card required), and put
+// the connection string in DATABASE_URL.
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // Neon's pooled connection (PgBouncer) doesn't support the advisory locks
+  // Prisma Migrate needs, so migrations run through a separate direct
+  // connection while the app itself keeps using the pooled one at runtime.
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  // rhel-openssl-3.0.x matches Vercel's serverless function runtime.
+  // "native" keeps local dev working on your own machine.
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+// Required shape for @shopify/shopify-app-session-storage-prisma
+model Session {
+  id            String    @id
+  shop          String
+  state         String
+  isOnline      Boolean   @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
+  userId        BigInt?
+  firstName     String?
+  lastName      String?
+  email         String?
+  accountOwner  Boolean   @default(false)
+  locale        String?
+  collaborator  Boolean?  @default(false)
+  emailVerified Boolean?  @default(false)
+  refreshToken        String?
+  refreshTokenExpires  DateTime?
+}

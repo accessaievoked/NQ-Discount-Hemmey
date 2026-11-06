@@ -1,0 +1,95 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "7d8e1fba470abd6e1af86b95c8f605f0"
+name = "NQ-Discount-Covera"
+application_url = "https://nq-discount-covera.vercel.app"
+embedded = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_discounts,read_products,write_products,read_metaobjects,write_metaobjects"
+
+[metaobjects.app.product_offer]
+name = "Product Offer"
+description = "Synced discount details attached to products, used to render active offers on the storefront"
+
+  [metaobjects.app.product_offer.access]
+  admin = "merchant_read_write"
+
+[metaobjects.app.product_offer.fields.title]
+name = "Title"
+type = "single_line_text_field"
+required = true
+
+[metaobjects.app.product_offer.fields.description]
+name = "Description"
+type = "multi_line_text_field"
+
+[metaobjects.app.product_offer.fields.description_override]
+name = "Description manually edited"
+type = "boolean"
+description = "When true, the merchant has manually edited the description in-app and future syncs must not overwrite it with Shopify's auto-generated summary."
+
+[metaobjects.app.product_offer.fields.approved]
+name = "Approved for storefront"
+type = "boolean"
+description = "When true, this offer is allowed to appear in the cart drawer / Best Offers panel. Defaults to false so newly created discounts require merchant review before going live on the storefront."
+
+[metaobjects.app.product_offer.fields.minimum_amount]
+name = "Minimum Spend"
+type = "number_decimal"
+description = "Cart subtotal (in shop currency) required before this offer is eligible, read from the discount's minimum requirement."
+
+[metaobjects.app.product_offer.fields.savings_label]
+name = "Savings Label"
+type = "single_line_text_field"
+description = "Short human-readable savings, e.g. '10% off' or '₹150 off', derived from the discount's value."
+
+[metaobjects.app.product_offer.fields.code]
+name = "Code"
+type = "single_line_text_field"
+
+[metaobjects.app.product_offer.fields.usage_limit]
+name = "Usage Limit"
+type = "single_line_text_field"
+
+[metaobjects.app.product_offer.fields.starts_at]
+name = "Starts At"
+type = "single_line_text_field"
+
+[metaobjects.app.product_offer.fields.ends_at]
+name = "Ends At"
+type = "single_line_text_field"
+
+[metaobjects.app.product_offer.fields.discount_gid]
+name = "Discount GID"
+type = "single_line_text_field"
+required = true
+
+[metaobjects.app.product_offer.fields.linked_product_ids]
+name = "Linked Product IDs"
+type = "json"
+
+[webhooks]
+api_version = "2026-10"
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/uninstalled"
+  topics = [ "app/uninstalled" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/scopes_update"
+  topics = [ "app/scopes_update" ]
+
+
+  [[webhooks.subscriptions]]
+topics = ["discounts/create", "discounts/update", "discounts/delete"]
+uri = "/webhooks/discounts"
+
+
+
+[auth]
+redirect_urls = [ "https://nq-discount-covera.vercel.app/auth/callback" ]
+
+[build]
+automatically_update_urls_on_dev = true
